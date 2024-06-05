@@ -1,27 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/global.css';
-import { api } from '../api';
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api('/courses', 'GET');
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Fetched courses:', data); // Debugging log
-          setCourses(data);
-        } else {
-          console.error('Failed to fetch courses:', response.status);
-        }
-      } catch (error) {
-        console.error('Error:', error);
+ useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await fetch('/api/courses');
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Fetched courses:', data); 
+        setCourses(data);
+      } else {
+        console.error('Failed to fetch courses:', response.status);
       }
-    };
-    fetchData();
-  }, []);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  fetchData();
+}, []);
+
 
   return (
     <div>

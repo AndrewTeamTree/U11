@@ -12,7 +12,10 @@ import UpdateCourse from './components/UpdateCourse';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/AuthContext';
 
+
+
 const App = () => {
+ 
   return (
     <AuthProvider>
       <Header />

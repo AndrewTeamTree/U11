@@ -7,17 +7,19 @@ function CourseDetail() {
 
   useEffect(() => {
     async function fetchCourse() {
-      try {
-        const response = await fetch(`http://localhost:3000/api/courses/${id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch course');
-        }
-        const data = await response.json();
-        setCourse(data);
-      } catch (error) {
-        console.error(error);
-      }
+     try {
+    // Get the ID from the URL parameter
+    const courseId = window.location.pathname.split('/')[2]; 
+    const response = await fetch(`/api/courses/${courseId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch course');
     }
+    const data = await response.json();
+    setCourse(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
     fetchCourse();
   }, [id]);
 
@@ -58,4 +60,3 @@ function CourseDetail() {
 }
 
 export default CourseDetail;
-

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import '../styles/global.css';
 
+
 const Header = () => {
   const { authUser, userSignOut } = useContext(AuthContext);
 
@@ -13,7 +14,7 @@ const Header = () => {
         <nav>
           {authUser ? (
             <ul className="header--signedin">
-              <li>Welcome, {authUser.username}!</li>
+              <li>Welcome, {authUser.firstName}!</li>
               <li><button onClick={userSignOut}>Sign Out</button></li>
             </ul>
           ) : (
@@ -29,4 +30,3 @@ const Header = () => {
 };
 
 export default Header;
-

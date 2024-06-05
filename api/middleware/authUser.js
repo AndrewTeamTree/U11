@@ -17,6 +17,8 @@ const authUser = async (req, res, next) => {
   try {
     // Find user by email address
     const user = await User.findOne({ where: { emailAddress: credentials.name } });
+  // Proceed with handling the request
+  res.json({ message: 'You are authorized!', user: currentUser });
 
     if (!user) {
       console.warn('User not found');
