@@ -1,26 +1,6 @@
 import React, { createContext, useState } from 'react';
 import Cookies from "js-cookie";
-
-const api = (url, method = "GET", body = null, credentials = null) => {
-  const options = {
-    method,
-    headers: {}
-  };
-
-  if (body) {
-    options.body = JSON.stringify(body);
-    options.headers["Content-Type"] = "application/json; charset=utf-8";
-  };
-
-  if (credentials) {
-    const encodedCreds = btoa(
-      `${credentials.username}:${credentials.password}`
-    );
-    options.headers.Authorization = `Basic ${encodedCreds}`;
-  }
-
-  return fetch(url, options);
-};
+import users from '../link/users';
 
 // Initialize Context
 const AuthContext = createContext(null);
@@ -31,12 +11,12 @@ export const AuthProvider = (props) => {
 
   const signIn = async (credentials) => {
     try {
-      const response = await api('/api/users', 'GET', null, credentials);
+      const response = await users('', 'GET', null, credentials);
       if (response.status === 200) {
         const user = await response.json();
-        user.user.password = credentials.password;
+        user.password = credentials.password;
         setAuthUser(user);
-        Cookies.set("authenticatedUser", JSON.stringify(user), {expires: 1});
+        Cookies.set("authenticatedUser", JSON.stringify(user), { expires: 1 });
         return user;
       } else if (response.status === 401) {
         return null;
@@ -47,11 +27,26 @@ export const AuthProvider = (props) => {
       console.log('Error: ', error.message);
       return null;
     }
-  }
+  };
 
   const signOut = () => {
     setAuthUser(null);
     Cookies.remove("authenticatedUser");
+  };
+
+  const createUser = async (user) => {
+    try {
+      console.log('Payload being sent:', user); // Log the payload
+      const response = await users('/users', 'POST', user);
+      if (response.status === 201) {
+        return response.json();
+      } else {
+        throw new Error();
+      }
+    } catch (error) {
+      console.log('Error: ', error.message);
+      return null;
+    }
   };
 
   return (
@@ -59,7 +54,8 @@ export const AuthProvider = (props) => {
       authUser,
       actions: {
         signIn,
-        signOut
+        signOut,
+        createUser
       }
     }}>
       {props.children}

@@ -3,9 +3,8 @@ import { Link } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import '../styles/global.css';
 
-
 const Header = () => {
-  const { authUser, userSignOut } = useContext(AuthContext);
+  const { authUser, actions } = useContext(AuthContext);
 
   return (
     <header>
@@ -15,7 +14,7 @@ const Header = () => {
           {authUser ? (
             <ul className="header--signedin">
               <li>Welcome, {authUser.firstName}!</li>
-              <li><button onClick={userSignOut}>Sign Out</button></li>
+              <li><button onClick={actions.signOut}>Sign Out</button></li>
             </ul>
           ) : (
             <ul className="header--signedout">

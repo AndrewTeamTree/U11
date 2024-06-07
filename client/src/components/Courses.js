@@ -1,45 +1,46 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/global.css';
+import  api  from '../link/api';
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
 
- useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await fetch('/api/courses');
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Fetched courses:', data); 
-        setCourses(data);
-      } else {
-        console.error('Failed to fetch courses:', response.status);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api('', "GET");
+        if (response.status === 200) {
+          const data = await response.json();
+          setCourses(data);
+        }
+      } catch (error) {
+        console.log("Error: ", error);
       }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-  fetchData();
-}, []);
+    };
+    fetchData();
+  }, []);
 
 
   return (
-    <div>
-      {courses.length > 0 ? (
-        courses.map((course) => (
-          <a
-            key={course.id}
-            className="course--module course--link"
-            href={`http://localhost:3000/courses/${course.id}`}
-          >
-            <h2 className="course--label">Course</h2>
-            <h3 className="course--title">{course.title}</h3>
-          </a>
-        ))
-      ) : (
-        <p>No courses available.</p>
-      )}
-      <a className="course--module course--add--module" href="create-course.html">
+      <div className="wrap main--grid">
+      {/* Map the courses state/array to render each course as a Link */}
+      {courses.map(course => (
+        <Link
+          to={`/courses/${course.id}`}
+          className='course--module course--link'
+          key={course.id}
+        >
+          <h2 className="course--label">Course</h2>
+          <h3 className="course--title">{course.title}</h3>
+        </Link>
+      ))}
+    
+      {/* Link to create a new course */}
+      <Link
+        to="/courses/create"
+        className="course--module course--add--module"
+      >
         <span className="course--add--title">
           <svg
             version="1.1"
@@ -49,13 +50,13 @@ const Courses = () => {
             viewBox="0 0 13 13"
             className="add"
           >
-            <polygon points="7,6 7,0 6,0 6,6 0,6 0,7 6,7 6,13 7,13 7,7 13,7 13,6 "></polygon>
+            <polygon points="7,6 7,0 6,0 6,6 0,6 0,7 6,7 6,13 7,13 7,7 13,7 13,6"></polygon>
           </svg>
           New Course
         </span>
-      </a>
+      </Link>
     </div>
   );
-};
+}
 
 export default Courses;

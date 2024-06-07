@@ -1,113 +1,62 @@
-import React, { useState, useContext } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useForm } from 'react-hook-form';
-
-// Context
-import AuthContext from "../context/AuthContext";
+import React, { useContext, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthContext';
 
 const UserSignUp = () => {
-  // React Hooks
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const { accentColor } = useContext(AuthContext);
   const navigate = useNavigate();
   const { actions } = useContext(AuthContext);
-  const [formErrors, setFormErrors] = useState(null); // Updated formErrors state
+  const [error, setError] = useState('');
+  const firstName = useRef(null);
+  const lastName = useRef(null);
+  const emailAddress = useRef(null);
+  const password = useRef(null);
 
-  // Handle form submission to Create a new User
-  const onSubmit = async (data) => {
-    console.log("Form data submitted:", data);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const newUser = {
+      firstName: firstName.current.value,
+      lastName: lastName.current.value,
+      emailAddress: emailAddress.current.value,
+      password: password.current.value,
+    };
 
+    console.log('Form data submitted:', newUser); // Log the form data
+    
     try {
-      const response = await fetch('http://localhost:5000/api/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      console.log("Response status:", response.status);
-
-      if (response.status === 201) {
-        console.log("User created successfully");
-        await actions.signIn(data);
-        navigate('/');
-      } else if (response.status === 400) {
-        const responseData = await response.json();
-        console.log("Errors:", responseData.errors);
-        setFormErrors(responseData.errors);
+      const response = await actions.createUser(newUser);
+      console.log('Payload being sent:', newUser); // Log the payload being sent
+      if (response) {
+        console.log('User created successfully');
+        navigate('/signin');
       } else {
-        console.log("Unexpected response status:", response.status, response.statusText);
-        const text = await response.text(); // Handle non-JSON responses
-        console.log("Response text:", text);
-        setFormErrors(['An unexpected error occurred. Please try again later.']);
+        setError('User creation failed');
       }
     } catch (error) {
-      console.log('Error:', error.message);
-      setFormErrors(['An unexpected error occurred. Please try again later.']);
+      console.error('Error:', error);
+      setError('An error occurred during sign up');
     }
   };
 
   return (
     <div className="form--centered">
-      <h1>Sign Up</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-       <label htmlFor="firstName">First Name</label>
-        <input
-          id="firstName"
-          name="firstName"
-          {...register('firstName', { required: 'First name is required' })}
-        />
-        {errors.firstName && <span>{errors.firstName.message}</span>}
-
+      <h2>Sign Up</h2>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="firstName">First Name</label>
+        <input id="firstName" name="firstName" type="text" ref={firstName} placeholder="First Name" required />
+        
         <label htmlFor="lastName">Last Name</label>
-        <input
-          id="lastName"
-          name="lastName"
-          {...register('lastName', { required: 'Last name is required' })}
-        />
-        {errors.lastName && <span>{errors.lastName.message}</span>}
-
+        <input id="lastName" name="lastName" type="text" ref={lastName} placeholder="Last Name" required />
+        
         <label htmlFor="emailAddress">Email Address</label>
-        <input
-          id="emailAddress"
-          name="emailAddress"
-          {...register('emailAddress', { required: 'Email is required' })}
-        />
-        {errors.emailAddress && <span>{errors.emailAddress.message}</span>}
-
+        <input id="emailAddress" name="emailAddress" type="email" ref={emailAddress} placeholder="email@example.com" required />
+        
         <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          {...register('password', { required: 'Password is required' })}
-        />
-        {errors.password && <span>{errors.password.message}</span>}
-
-        <div className="pad-bottom">
-          <button className="button" type="submit">
-            Sign Up
-          </button>
-          <button className="button button-secondary" type="button" onClick={() => navigate('/')}>
-            Cancel
-          </button>
-        </div>
+        <input id="password" name="password" type="password" ref={password} placeholder="Password" required />
+        
+        {error && <p className="error">{error}</p>}
+        
+        <button className="button" type="submit">Sign Up</button>
       </form>
-      {formErrors && (
-        <ul className="validation-errors">
-          {formErrors.map((error, index) => (
-            <li key={index}>{error}</li>
-          ))}
-        </ul>
-      )}
-      <p>
-        Already have a user account?{' '}
-        <Link style={{ color: accentColor }} to="/signin">
-          Click here
-        </Link>{' '}
-        to sign in!
-      </p>
     </div>
   );
 };

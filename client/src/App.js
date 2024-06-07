@@ -12,10 +12,7 @@ import UpdateCourse from './components/UpdateCourse';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/AuthContext';
 
-
-
 const App = () => {
- 
   return (
     <AuthProvider>
       <Header />
@@ -24,7 +21,7 @@ const App = () => {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signout" element={<SignOut />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="*" element={<NotFound />} />        
+        <Route path="*" element={<NotFound />} />
         <Route path="/courses/:id" element={<CourseDetail />} />
         <Route element={<PrivateRoute />}>
           <Route path="/courses/create" element={<CreateCourse />} />

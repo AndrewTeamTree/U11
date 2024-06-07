@@ -1,26 +1,21 @@
-export const api = (
-  path,
-  method = "GET",
-  body = null,
-  credentials = null
-) => {
-  const url = 'https://nonstop-circle-production.up.railway.app/api' + path;
+
+
+const url = "http://localHost:5000/api/courses";
+
+const api = async (endpoint, method, data) => {
   const options = {
-    method,
-    headers: {}
+    method: method,
+    headers: {
+      'Content-Type': 'application/json'
+    }
   };
 
-  if (body) {
-    options.body = JSON.stringify(body);
-    options.headers["Content-Type"] = "application/json; charset=utf-8";
-  };
-
-  if (credentials) {
-    const encodedCreds = btoa(
-      `${credentials.username}:${credentials.password}`
-    );
-    options.headers.Authorization = `Basic ${encodedCreds}`;
+  if (data) {
+    options.body = JSON.stringify(data);
   }
 
-  return fetch(url, options);
+  const response = await fetch(`${url}${endpoint}`, options);
+  return response;
 };
+
+export default api;
