@@ -25,10 +25,11 @@ router.post('/users', [
     return res.status(400).json({ errors: errors.array() });
   }
 
+
   try {
     console.log('Payload being processed:', req.body);
-    await User.create(req.body);
-    res.status(201).location('/').end();
+    const user = await User.create(req.body);
+    res.status(201).json(user); // Ensure a JSON response is sent
   } catch (error) {
     if (error.name === "SequelizeValidationError" || error.name === "SequelizeUniqueConstraintError") {
       const errors = error.errors.map(err => err.message);

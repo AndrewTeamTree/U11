@@ -4,7 +4,8 @@ const users = async (endpoint, method = 'GET', data = null, credentials = null) 
   const options = {
     method: method,
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
     }
   };
 
@@ -21,11 +22,12 @@ const users = async (endpoint, method = 'GET', data = null, credentials = null) 
   try {
     const response = await fetch(`${url}${endpoint}`, options);
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorMessage = await response.text();
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorMessage}`);
     }
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error('Fetch error:', error.message);
     throw error;
   }
 };

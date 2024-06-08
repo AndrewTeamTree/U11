@@ -2,7 +2,6 @@ import React, { createContext, useState } from 'react';
 import Cookies from "js-cookie";
 import users from '../link/users';
 
-// Initialize Context
 const AuthContext = createContext(null);
 
 export const AuthProvider = (props) => {
@@ -19,12 +18,14 @@ export const AuthProvider = (props) => {
         Cookies.set("authenticatedUser", JSON.stringify(user), { expires: 1 });
         return user;
       } else if (response.status === 401) {
+        console.error('Unauthorized: Invalid credentials');
         return null;
       } else {
-        throw new Error();
+        const errorMessage = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorMessage}`);
       }
     } catch (error) {
-      console.log('Error: ', error.message);
+      console.error('SignIn Error: ', error.message);
       return null;
     }
   };
@@ -35,19 +36,21 @@ export const AuthProvider = (props) => {
   };
 
   const createUser = async (user) => {
-    try {
-      console.log('Payload being sent:', user); // Log the payload
-      const response = await users('/users', 'POST', user);
-      if (response.status === 201) {
-        return response.json();
-      } else {
-        throw new Error();
-      }
-    } catch (error) {
-      console.log('Error: ', error.message);
-      return null;
+  try {
+    console.log('Payload being sent:', user); // Log the payload
+    const response = await users('', 'POST', user);
+    if (response.status === 201) {
+      return await response.json(); // Parse the response as JSON
+    } else {
+      const message = await response.json();
+      throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(message)}`);
     }
-  };
+  } catch (error) {
+    console.log('Error: ', error.message);
+    throw error; // Ensure the error is thrown so the calling component can catch it
+  }
+};
+
 
   return (
     <AuthContext.Provider value={{

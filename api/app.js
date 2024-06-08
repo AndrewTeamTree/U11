@@ -6,13 +6,19 @@ const userRoute = require('./routes/userRoutes');
 const courseRoute = require('./routes/courseRoutes');
 const app = express();
 
-app.use(cors()); // Enable CORS for all routes
+
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true // Enable if you need to handle cookies
+}));
 app.use(express.json());
 app.use(morgan('dev'));
 
 // Define route middleware
 app.use('/api', userRoute);
 app.use('/api', courseRoute);
+app.options('*', cors());
 
 // Root route
 app.get('/', (req, res) => {

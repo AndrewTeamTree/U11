@@ -29,11 +29,16 @@ const UserSignUp = () => {
         console.log('User created successfully');
         navigate('/signin');
       } else {
-        setError('User creation failed');
+        setError('User creation failed. Please try again.');
       }
     } catch (error) {
       console.error('Error:', error);
-      setError('An error occurred during sign up');
+      try {
+        const errorMessage = JSON.parse(error.message.split('message: ')[1]).errors.join(', ');
+        setError(`An error occurred during sign up: ${errorMessage}`);
+      } catch (parseError) {
+        setError('An error occurred during sign up. Please try again.');
+      }
     }
   };
 
