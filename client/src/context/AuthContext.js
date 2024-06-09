@@ -15,7 +15,7 @@ export const AuthProvider = (props) => {
         const user = await response.json();
         user.password = credentials.password;
         setAuthUser(user);
-        Cookies.set("authenticatedUser", JSON.stringify(user), { expires: 1 });
+        Cookies.set('authenticatedUser', JSON.stringify(user), { expires: 1, sameSite: 'None', secure: true });
         return user;
       } else if (response.status === 401) {
         console.error('Unauthorized: Invalid credentials');
