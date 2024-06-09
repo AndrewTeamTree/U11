@@ -1,11 +1,24 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const session = require('express-session');
 
 const userRoute = require('./routes/userRoutes');
 const courseRoute = require('./routes/courseRoutes');
 const app = express();
 
+// Session configuration
+app.use(session({
+  name: 'sessionId',
+  secret: 'yourSecretKey', // Replace with your own secret
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    secure: false, // Set to true if using HTTPS
+    httpOnly: true,
+    sameSite: 'lax', // Can be 'strict', 'lax', or 'none'
+  }
+}));
 
 app.use(cors({
   origin: 'http://localhost:3000',
@@ -36,9 +49,8 @@ app.use((req, res, next) => {
 
 // Global error handler middleware
 app.use((err, req, res, next) => {
-  console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
+  console.error(`Global error handler: ${err.message}`);
 
-  // Check if headers have already been sent
   if (res.headersSent) {
     return next(err);
   }

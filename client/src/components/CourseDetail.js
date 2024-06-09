@@ -4,25 +4,31 @@ import { useParams, Link } from 'react-router-dom';
 function CourseDetail() {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchCourse() {
-     try {
-    // Get the ID from the URL parameter
-    const courseId = window.location.pathname.split('/')[2]; 
-    const response = await fetch(`/api/courses/${courseId}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch course');
+      try {
+        const response = await fetch(`/api/courses/${id}`);
+        const contentType = response.headers.get('content-type');
+        if (!response.ok) {
+          throw new Error('Failed to fetch course');
+        }
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          setCourse(data);
+        } else {
+          const text = await response.text();
+          throw new Error(`Unexpected response format: ${text}`);
+        }
+      } catch (error) {
+        setError(error.message);
+      }
     }
-    const data = await response.json();
-    setCourse(data);
-  } catch (error) {
-    console.error(error);
-  }
-}
     fetchCourse();
   }, [id]);
 
+  if (error) return <p>{error}</p>;
   if (!course) return <p>Loading...</p>;
 
   return (
@@ -33,7 +39,7 @@ function CourseDetail() {
           <div>
             <h3 className="course--detail--title">Course</h3>
             <h4 className="course--name">{course.title}</h4>
-            <p>By {course.author}</p>
+            <p>By {course.User.firstName} {course.User.lastName}</p>
             <p>{course.description}</p>
           </div>
           <div>
@@ -41,7 +47,7 @@ function CourseDetail() {
             <p>{course.estimatedTime}</p>
             <h3 className="course--detail--title">Materials Needed</h3>
             <ul className="course--detail--list">
-              {course.materialsNeeded.split('\n').map((material, index) => (
+              {course.materialsNeeded && course.materialsNeeded.split('\n').map((material, index) => (
                 <li key={index}>{material}</li>
               ))}
             </ul>
