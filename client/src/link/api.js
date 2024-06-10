@@ -1,7 +1,3 @@
-
-
-const url = "http://localHost:5000/api/courses";
-
 const api = async (endpoint, method, data) => {
   const options = {
     method: method,
@@ -9,12 +5,12 @@ const api = async (endpoint, method, data) => {
       'Content-Type': 'application/json'
     }
   };
-
+  
   if (data) {
     options.body = JSON.stringify(data);
   }
 
-  const response = await fetch(`${url}${endpoint}`, options);
+  const response = await fetch(`http://localhost:5000/api/courses${endpoint}`, options);
   return response;
 };
 

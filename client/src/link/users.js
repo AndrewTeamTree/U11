@@ -1,5 +1,3 @@
-const url = "http://localhost:5000/api/users";
-
 const users = async (endpoint, method = 'GET', data = null, credentials = null) => {
   const options = {
     method: method,
@@ -9,7 +7,6 @@ const users = async (endpoint, method = 'GET', data = null, credentials = null) 
     }
   };
 
-  // Add authorization header if credentials are provided
   if (credentials) {
     const encodedCredentials = btoa(`${credentials.username}:${credentials.password}`);
     options.headers['Authorization'] = `Basic ${encodedCredentials}`;
@@ -20,14 +17,11 @@ const users = async (endpoint, method = 'GET', data = null, credentials = null) 
   }
 
   try {
-    const response = await fetch(`${url}${endpoint}`, options);
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(`HTTP error! status: ${response.status}, message: ${errorMessage}`);
-    }
+    const response = await fetch(`http://localhost:5000/api/users${endpoint}`, options);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return response;
   } catch (error) {
-    console.error('Fetch error:', error.message);
+    console.error('Error:', error.message);
     throw error;
   }
 };

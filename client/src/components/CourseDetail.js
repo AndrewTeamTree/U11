@@ -1,32 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 
 function CourseDetail() {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetchCourse() {
+    const fetchCourse = async () => {
       try {
-        const response = await fetch(`/api/courses/${id}`);
-        const contentType = response.headers.get('content-type');
-        if (!response.ok) {
-          throw new Error('Failed to fetch course');
-        }
-        if (contentType && contentType.includes('application/json')) {
+        const response = await fetch(`http://localhost:5000/api/courses/${id}`);
+        if (response.ok) {
           const data = await response.json();
           setCourse(data);
         } else {
-          const text = await response.text();
-          throw new Error(`Unexpected response format: ${text}`);
+          throw new Error('Failed to fetch course data');
         }
       } catch (error) {
-        setError(error.message);
+        console.error(error);
+        navigate('/error'); 
       }
-    }
+    };
     fetchCourse();
-  }, [id]);
+  }, [id, navigate]);
 
   if (error) return <p>{error}</p>;
   if (!course) return <p>Loading...</p>;
