@@ -6,7 +6,7 @@
 
 In the api directory, you can run:
 
-### `npm i` then `npm start`
+### `npm i` then `npm run seed` and then `npm start`
 
 In the client directory, you can run:
 

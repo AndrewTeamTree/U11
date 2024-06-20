@@ -10,4 +10,3 @@ const SignOut = ({ userSignOut }) => {
 
 export default SignOut;
 
-

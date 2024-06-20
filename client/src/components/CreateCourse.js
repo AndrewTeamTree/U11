@@ -1,107 +1,114 @@
-import React, { useState } from 'react';
+
+import React, { useState, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {  AuthProvider } from '../context/AuthContext';
+//import api from '../link/api';
+import AuthContext from "../context/AuthContext";
 
 const CreateCourse = () => {
-  const { actions } = (AuthProvider);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [estimatedTime, setEstimatedTime] = useState('');
-  const [materialsNeeded, setMaterialsNeeded] = useState('');
+  const { actions } = useContext(AuthContext);
+  const { authUser } = useContext(AuthContext);
+  const title = useRef(null);
+  const description = useRef(null);
+  const estimatedTime = useRef(null);
+  const materialsNeeded = useRef(null);
   const [errors, setErrors] = useState([]);
   const navigate = useNavigate();
 
-  const api = async (path, method = 'GET', body = null) => {
-    const url = `http://localhost:5000/api/courses${path}`;
-    const options = {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: body ? JSON.stringify(body) : null,
-    };
-    const response = await fetch(url, options);
-    return response;
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const course = { title, description, estimatedTime, materialsNeeded };
+
+    const newCourse = {
+      title: title.current.value,
+      description: description.current.value,
+      estimatedTime: estimatedTime.current.value,
+      materialsNeeded: materialsNeeded.current.value,
+      
+    };
+
+    const credentials = {
+      username: authUser.user.emailAddress,
+      password: authUser.user.password,
+    };
+
+    try {/*
+    console.log('Form data submitted:', newUser); // Log the form data
+    
     try {
-      const response = await api('', 'POST', course);
-      if (response.status === 201) {
+      const response = await actions.createUser(newUser);
+      console.log('Payload being sent:', newUser); // Log the payload being sent
+      if (response) {
+        console.log('User created successfully');
+        navigate('/signin');
+      } else {
+        setError( */
+      const response = await actions.createCourse(newCourse, '/');
+      console.log('Payload being sent:', newCourse); // Log the payload being sent
+      if (credentials) {
+        console.log('Course created successfully');
         navigate('/');
-        const createdCourse = await actions.createCourse(course);
-      if (createdCourse) {
-        navigate('/');
-      }
       } else if (response.status === 400) {
         const data = await response.json();
         setErrors(data.errors);
-      } 
+      } else {
+        throw new Error('Failed to create course');
+      }
     } catch (error) {
-      console.error(error);
-      navigate('/error');
+      console.error('Error:', error.message);
     }
   };
-
 
   return (
     <div className="wrap">
       <h2>Create Course</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="main--flex">
+          <div>
+            <label htmlFor="title">Course Title</label>
+            <input
+              id="courseTitle"
+              name="courseTitle"
+              type="text"
+              ref={title}
+            />
+            <label htmlFor="courseDescription">Course Description</label>
+            <textarea
+              id="courseDescription"
+              name="courseDescription"
+              ref={description}
+              style={{ resize: 'none' }}
+            />
+          </div>
+          <div>
+            <label htmlFor="estimatedTime">Estimated Time</label>
+            <input
+              id="estimatedTime"
+              name="estimatedTime"
+              type="text"
+              ref={estimatedTime}
+            />
+            <label htmlFor="materialsNeeded">Materials Needed</label>
+            <textarea
+              id="materialsNeeded"
+              name="materialsNeeded"
+              ref={materialsNeeded}
+              style={{ resize: 'none' }}
+            />
+          </div>
+        </div>
+        <button className="button" type="submit">Create Course</button>
+      </form>
       {errors.length > 0 && (
-        <div>
-          <h2>Validation Errors</h2>
+        <div className="validation--errors">
+          <h3>Validation Errors</h3>
           <ul>
-            {errors.map((error, index) => <li key={index}>{error}</li>)}
+            {errors.map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
           </ul>
         </div>
       )}
-      <form onSubmit={handleSubmit}>
-        <div className="main--flex">
-        
-          <label htmlFor="title">Title</label>
-          <input 
-            id="title" 
-            name="title" 
-            type="text" 
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="description">Description</label>
-          <textarea 
-            id="description" 
-            name="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="estimatedTime">Estimated Time</label>
-          <input 
-            id="estimatedTime" 
-            name="estimatedTime" 
-            type="text" 
-            value={estimatedTime}
-            onChange={(e) => setEstimatedTime(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="materialsNeeded">Materials Needed</label>
-          <textarea 
-            id="materialsNeeded" 
-            name="materialsNeeded"
-            value={materialsNeeded}
-            onChange={(e) => setMaterialsNeeded(e.target.value)}
-          />
-        </div>
-        <button className="button" type="submit">Create Course</button>
-        <button className="button button-secondary" onClick={() => navigate('/')}>Cancel</button>  
-      </form>
     </div>
   );
-};
+}
 
 export default CreateCourse;

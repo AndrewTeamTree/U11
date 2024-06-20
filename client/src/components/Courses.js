@@ -9,7 +9,7 @@ const Courses = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api('', "GET");
+        const response = await api('/courses', "GET");
         if (response.status === 200) {
           const data = await response.json();
           setCourses(data);

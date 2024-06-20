@@ -1,4 +1,74 @@
+
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import api from '../link/api';
+
+const UpdateCourse = () => {
+  const { id } = useParams();
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        const response = await api(`/${id}`, 'GET');
+        if (response.status === 200) {
+          const data = await response.json();
+          setTitle(data.title);
+          setDescription(data.description);
+        } else {
+          console.error('Failed to fetch course');
+        }
+      } catch (error) {
+        console.error('Error: ', error);
+      }
+    };
+    fetchCourse();
+  }, [id]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api(`/${id}`, 'PUT', { title, description });
+      if (response.status === 200) {
+        navigate('/');
+      } else {
+        console.error('Failed to update course');
+      }
+    } catch (error) {
+      console.error('Error: ', error);
+    }
+  };
+
+  return (
+    <div>
+      <h1>Update Course</h1>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Title:
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+        </label>
+        <label>
+          Description:
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} required />
+        </label>
+        <button type="submit">Update Course</button>
+      </form>
+    </div>
+  );
+};
+
+export default UpdateCourse;
+
+
+
+/*import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const UpdateCourse = () => {
@@ -15,7 +85,11 @@ const UpdateCourse = () => {
   const password = 'yourPassword';
   const encodedCredentials = btoa(`${username}:${password}`);
 
-  useEffect(() => {
+*/
+
+
+
+ /* useEffect(() => {
     const fetchCourse = async () => {
       try {
         const response = await fetch(`http://localhost:5000/api/courses/${id}`);
@@ -34,9 +108,8 @@ const UpdateCourse = () => {
     };
     fetchCourse();
   }, [id]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+*/
+   /* e.preventDefault();
     const course = {
       title,
       description,
@@ -69,9 +142,8 @@ const UpdateCourse = () => {
       console.error('Error updating course:', error);
     }
   };
-
-  return (
-    <div>
+*/
+    /*<div>
       <h1>Update Course</h1>
       {errors.length > 0 && (
         <div>
@@ -126,4 +198,4 @@ const UpdateCourse = () => {
   );
 };
 
-export default UpdateCourse;
+export default UpdateCourse;*/

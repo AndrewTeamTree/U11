@@ -1,6 +1,7 @@
 import React, { createContext, useState } from 'react';
 import Cookies from "js-cookie";
 import users from '../link/users';
+import api from '../link/api';
 
 const AuthContext = createContext(null);
 
@@ -51,14 +52,40 @@ export const AuthProvider = (props) => {
   }
 };
 
-
+/*const response = await users('', 'GET', null, credentials);
+      if (response.status === 200) {
+        const user = await response.json();
+        user.password = credentials.password;
+        setAuthUser(user);
+        Cookies.set('authenticatedUser', JSON.stringify(user), { expires: 1, sameSite: 'None', secure: true });
+        return user;
+      } else if (response.status = */
+  const createCourse = async (course) => {
+  try {
+    if (authUser) {
+      return createCourse;
+    }
+    console.log('Payload being sent:', course); // Log the payload
+    const response = await api('/courses', "POST", course);
+    if (response.status === 201) {
+      return await response.json(); // Parse the response as JSON
+    } else {
+      const message = await response.json();
+      throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(message)}`);
+    }
+  } catch (error) {
+    console.log('Error: ', error.message);
+    throw error; // Ensure the error is thrown so the calling component can catch it
+  }
+};
   return (
     <AuthContext.Provider value={{
       authUser,
       actions: {
         signIn,
         signOut,
-        createUser
+        createUser,
+        createCourse,
       }
     }}>
       {props.children}
