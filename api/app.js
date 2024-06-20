@@ -1,37 +1,36 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const session = require('express-session');
 
 const userRoute = require('./routes/userRoutes');
 const courseRoute = require('./routes/courseRoutes');
 const app = express();
+const sequelize = require('./models/index').sequelize;
 
-// Session configuration
-app.use(session({
-  name: 'sessionId',
-  secret: 'yourSecretKey', // Replace with your own secret
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-    secure: false, // Set to true if using HTTPS
-    httpOnly: true,
-    sameSite: 'lax', // Can be 'strict', 'lax', or 'none'
-  }
-}));
+// Attempt to authenticate with the database
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Connection to the database has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
 
+// CORS configuration
 app.use(cors({
   origin: 'http://localhost:3000',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true // Enable if you need to handle cookies
 }));
+
 app.use(express.json());
 app.use(morgan('dev'));
 
 // Define route middleware
 app.use('/api', userRoute);
 app.use('/api', courseRoute);
-app.options('*', cors());
+app.options('*', cors()); // Pre-flight requests handling
 
 // Root route
 app.get('/', (req, res) => {

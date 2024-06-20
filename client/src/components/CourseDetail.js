@@ -56,7 +56,7 @@ function CourseDetail() {
       </form>
       <div className="actions--bar">
         <div className="wrap">
-          <Link className="button" to={`/update-course/${course.id}`}>Update Course</Link>
+          <Link className="button" to={`/courses/:id/update`}>Update Course</Link>
           <button className="button">Delete Course</button>
           <Link className="button button-secondary" to="/">Return to List</Link>
         </div>

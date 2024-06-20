@@ -1,5 +1,4 @@
 'use strict';
-
 const express = require('express');
 const router = express.Router();
 const authUser = require('../middleware/authUser');
@@ -15,11 +14,17 @@ router.post('/courses', authUser, [
     return res.status(400).json({ errors: errors.array() });
   }
 
+  console.log('Request body:', req.body);
+
   try {
-    const course = await Course.create(req.body);
+    const course = await Course.create({
+      title: req.body.title,
+      description: req.body.description,
+      userId: req.currentUser.id
+    });
     res.status(201).location(`/courses/${course.id}`).end();
   } catch (error) {
-    console.error(error);
+    console.error('Error creating course:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
@@ -63,7 +68,7 @@ router.get('/courses/:id', async (req, res) => {
 
 
 // PUT /api/courses/:id route
-router.put('/courses/:id', authUser, [
+router.put('/courses/:id/', authUser, [
   check('title')
     .notEmpty()
     .withMessage('Please enter a valid course title.'),
