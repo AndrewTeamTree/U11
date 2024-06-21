@@ -9,7 +9,7 @@ import CourseDetail from './components/CourseDetail';
 import CreateCourse from './components/CreateCourse';
 import UpdateCourse from './components/UpdateCourse';
 import PrivateRoute from './components/PrivateRoute';
-import AuthContext, { AuthProvider } from './context/AuthContext';
+import  { AuthProvider } from './context/AuthContext';
 
 const App = () => {
   return (

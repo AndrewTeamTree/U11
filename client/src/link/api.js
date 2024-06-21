@@ -1,13 +1,17 @@
-
 const baseUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api";
 
-const api = async (endpoint, method, data) => {
+const api = async (endpoint, method, data = null, credentials = null) => {
   const options = {
-    method: method,
+    method,
     headers: {
       'Content-Type': 'application/json',
     },
   };
+
+  if (credentials) {
+    const encodedCredentials = btoa(`${credentials.username}:${credentials.password}`);
+    options.headers['Authorization'] = `Basic ${encodedCredentials}`;
+  }
 
   if (data) {
     options.body = JSON.stringify(data);
@@ -18,10 +22,6 @@ const api = async (endpoint, method, data) => {
 };
 
 export default api;
-
-
-
-
 
 
 
