@@ -14,22 +14,22 @@ const CreateCourse = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     const course = {
       title,
       description,
       materialsNeeded,
       estimatedTime,
+      userId: authUser.id,
     };
 
     try {
       const response = await api('/courses', 'POST', course, {
-        username: authUser.emailAddress,
+        username: authUser.emailAddress, // Ensure this is the correct field
         password: authUser.password,
       });
-
       if (response.status === 201) {
-        const newCourse = await response.json();
-        navigate(`/courses/${newCourse.id}`);
+        navigate('/');
       } else {
         const message = await response.json();
         setErrors([`HTTP error! status: ${response.status}, message: ${JSON.stringify(message)}`]);

@@ -1,46 +1,10 @@
-const baseUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api";
-
-const api = async (endpoint, method, data = null, credentials = null) => {
-  const options = {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-
-  if (credentials) {
-    const encodedCredentials = btoa(`${credentials.username}:${credentials.password}`);
-    options.headers['Authorization'] = `Basic ${encodedCredentials}`;
-  }
-
-  if (data) {
-    options.body = JSON.stringify(data);
-  }
-
-  const response = await fetch(`${baseUrl}${endpoint}`, options);
-  return response;
-};
-
-export default api;
-
-
-
-
-
-
-
-
-
-
-
-
-/*export const api = (
+const api = (
   path,
   method = "GET",
   body = null,
   credentials = null
 ) => {
-  const url = 'http://localHost:5000/api' + path;
+  const url = 'http://localhost:5000/api' + path;
   const options = {
     method,
     headers: {}
@@ -49,7 +13,7 @@ export default api;
   if (body) {
     options.body = JSON.stringify(body);
     options.headers["Content-Type"] = "application/json; charset=utf-8";
-  };
+  }
 
   if (credentials) {
     const encodedCreds = btoa(
@@ -58,8 +22,10 @@ export default api;
     options.headers.Authorization = `Basic ${encodedCreds}`;
   }
 
-  return fetch(url, options);
+  return fetch(url, options).then(response => {
+    console.log('API Call:', { url, options, status: response.status });
+    return response;
+  });
 };
 
 export default api;
-*/

@@ -22,7 +22,6 @@
     "express-async-handler": "^1.2.0",
     "express-session": "^1.18.0",
     "express-validator": "^7.0.1",
-    
     "morgan": "^1.10.0",
     "mysql2": "^3.9.7",
     "passport": "^0.7.0",
@@ -30,6 +29,7 @@
     "passport-local": "^1.0.0",
     "promise.prototype.finally": "^3.1.2",
     "sequelize": "^6.37.3",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "webpack-dev-server": "^5.0.4"
   }
 }

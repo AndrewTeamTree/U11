@@ -1,5 +1,6 @@
 'use strict';
-const authUser = require('../middleware/authUser');
+const authUser = require('../middleware/authUser').default;
+
 const { check, validationResult } = require('express-validator');
 const { User } = require('../models');
 
