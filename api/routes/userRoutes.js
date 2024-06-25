@@ -1,6 +1,5 @@
 'use strict';
-const authUser = require('../middleware/authUser').default;
-
+const authUser = require('../middleware/authUser');
 const { check, validationResult } = require('express-validator');
 const { User } = require('../models');
 
@@ -43,3 +42,5 @@ router.post('/users', [
 });
 
 module.exports = router;
+
+

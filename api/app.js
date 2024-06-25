@@ -32,6 +32,18 @@ app.use('/api', userRoute);
 app.use('/api', courseRoute);
 app.options('*', cors()); // Pre-flight requests handling
 
+
+app.use((err, req, res, next) => {
+  if (!res.headersSent) {
+    res.status(err.status || 500).json({
+      message: err.message,
+      error: process.env.NODE_ENV === 'development' ? err : {}
+    });
+  } else {
+    next(err);
+  }
+});
+
 // Root route
 app.get('/', (req, res) => {
   res.json({

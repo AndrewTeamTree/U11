@@ -1,34 +1,45 @@
-'use strict';
-const express = require('express');
-const router = express.Router();
-const authUser = require('../middleware/authUser');
-const { User, Course } = require('../models');
-const { check, validationResult } = require('express-validator');
+'use strict'
+const express = require('express')
+const router = express.Router()
+const authUser = require('../middleware/authUser')
+const { User, Course } = require('../models')
+const { check, validationResult } = require('express-validator')
 
-router.post('/courses', authUser, [
-  check('title').notEmpty().withMessage('Title is required'),
+router.post('/courses', authUser, async (req, res, next) => {
+  [check('title').notEmpty().withMessage('Title is required'),
   check('description').notEmpty().withMessage('Description is required'),
-], async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+  ], async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
+
+    console.log('Request body:', req.body)
+    // Server-side route
+    console.log('Received request at /api/courses:', req.body)
+
+    try {
+      const course = await Course.create({
+        title: req.body.title,
+        description: req.body.description,
+        estimatedTime: req.body.estimatedTime,
+        materialsNeeded: req.body.materialsNeeded,
+        userId: req.currentUser.id
+      })
+      res.status(201).json(course)
+      // Server-side route
+      console.log('p2 Received request at /api/courses:', req.body)
+
+      //res.status(201).location(`/courses/${course.id}`).end();
+    } catch (error) {
+      if (!res.headersSent) {
+        res.status(400).json({ message: error.message })
+      } else {
+        next(error)
+      }
+    }
   }
-
-  console.log('Request body:', req.body);
-
-  try {
-    const course = await Course.create({
-      title: req.body.title,
-      description: req.body.description,
-      userId: req.currentUser.id
-    });
-    res.status(201).location(`/courses/${course.id}`).end();
-  } catch (error) {
-    console.error('Error creating course:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
+})
 // GET /api/courses route
 router.get('/courses', async (req, res) => {
   try {
@@ -36,35 +47,35 @@ router.get('/courses', async (req, res) => {
       include: {
         model: User,
       }
-    });
-    console.log('Sending courses:', JSON.stringify(courses));
-    res.status(200).json(courses);
+    })
+    console.log('Sending courses:', JSON.stringify(courses))
+    res.status(200).json(courses)
   } catch (error) {
-    console.error('Error fetching courses:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error('Error fetching courses:', error)
+    res.status(500).json({ message: 'Internal Server Error' })
   }
-});
+})
 
 
 // GET /api/courses/:id route
 router.get('/courses/:id', async (req, res) => {
-  const courseId = req.params.id;
+  const courseId = req.params.id
   try {
     const course = await Course.findByPk(courseId, {
       include: {
         model: User,
       }
-    });
+    })
     if (course) {
-      res.json(course);
+      res.json(course)
     } else {
-      res.status(404).json({ error: 'Course not found' });
+      res.status(404).json({ error: 'Course not found' })
     }
   } catch (error) {
-    console.error('Error fetching course:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error('Error fetching course:', error)
+    res.status(500).json({ message: 'Internal Server Error' })
   }
-});
+})
 
 
 // PUT /api/courses/:id route
@@ -76,52 +87,52 @@ router.put('/courses/:id/', authUser, [
     .notEmpty()
     .withMessage('Please enter a valid course description.'),
 ], async (req, res) => {
-  const result = validationResult(req);
+  const result = validationResult(req)
 
   if (result.isEmpty()) {
-    let course;
+    let course
     try {
-      course = await Course.findByPk(req.params.id);
+      course = await Course.findByPk(req.params.id)
       if (course) {
-        await course.set(req.body);
-        const user = await User.findByPk(req.body.userId);
+        await course.set(req.body)
+        const user = await User.findByPk(req.body.userId)
 
         if (!user) {
-          return res.status(404).json({ message: 'User not found' });
+          return res.status(404).json({ message: 'User not found' })
         }
 
-        await course.save();
-        res.status(204).location(`/courses/${course.id}`).end();
+        await course.save()
+        res.status(204).location(`/courses/${course.id}`).end()
       } else {
-        res.status(404).json({ message: 'Course not found.' });
+        res.status(404).json({ message: 'Course not found.' })
       }
     } catch (error) {
       if (error.name === "SequelizeValidationError" || error.name === "SequelizeUniqueConstraintError") {
-        const errors = error.errors.map(err => err.message);
-        res.status(400).json({ errors });
+        const errors = error.errors.map(err => err.message)
+        res.status(400).json({ errors })
       } else {
-        throw error;
+        throw error
       }
     }
   } else {
-    res.status(400).send({ errors: result.array() });
+    res.status(400).send({ errors: result.array() })
   }
-});
+})
 
 // DELETE /api/courses/:id route
 router.delete('/courses/:id', authUser, async (req, res) => {
   try {
-    const course = await Course.findByPk(req.params.id);
+    const course = await Course.findByPk(req.params.id)
     if (course) {
-      await course.destroy();
-      res.status(204).end();
+      await course.destroy()
+      res.status(204).end()
     } else {
-      res.status(404).json({ message: 'Course not found' });
+      res.status(404).json({ message: 'Course not found' })
     }
   } catch (error) {
-    console.error('Error deleting course:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error('Error deleting course:', error)
+    res.status(500).json({ message: 'Internal Server Error' })
   }
-});
+})
 
-module.exports = router;
+module.exports = router
