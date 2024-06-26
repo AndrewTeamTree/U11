@@ -50,18 +50,32 @@ const CourseDetail = () => {
   return (
     <div className="wrap">
       <h2>Course Detail</h2>
-      <div>
-        <h3>{course.title}</h3>
-        <Markdown>{course.description}</Markdown>
-        <p>Estimated Time: {course.estimatedTime}</p>
-        <Markdown>{course.materialsNeeded}</Markdown>
-        {authUser && authUser.id === course.userId && (
+      <form>
+        <div className="main--flex">
           <div>
-            <Link className="button" to={`/courses/${id}/update`}>Update Course</Link>
-            <button className="button" onClick={handleDeleteCourse}>Delete</button>
-            <Link className="button button-secondary" to="/">Return to List</Link>
+            <h3 className="course--detail--title">Course</h3>
+            <h4 className="course--name">{course.title}</h4>
+            <p>By {course.User.firstName} {course.User.lastName}</p>
+            <p>{course.description}</p>
           </div>
-        )}
+          <div>
+            <h3 className="course--detail--title">Estimated Time</h3>
+            <p>{course.estimatedTime}</p>
+            <h3 className="course--detail--title">Materials Needed</h3>
+            <ul className="course--detail--list">
+              {course.materialsNeeded && course.materialsNeeded.split('\n').map((material, index) => (
+                <li key={index}>{material}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </form>
+      <div className="actions--bar">
+        <div className="wrap">
+          <Link className="button" to={`/courses/${id}/update`}>Update Course</Link>
+          <button className="button" onClick={handleDeleteCourse}>Delete</button>
+          <Link className="button button-secondary" to="/">Return to List</Link>
+        </div>
       </div>
     </div>
   )
