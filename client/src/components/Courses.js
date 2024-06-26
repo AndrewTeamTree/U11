@@ -1,30 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import '../styles/global.css';
-import  api  from '../link/api';
+import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import '../styles/global.css'
+import api from '../link/api'
 
 const Courses = () => {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api('/courses', "GET");
+        const response = await api('/courses', "GET")
         if (response.status === 200) {
-          const data = await response.json();
-          setCourses(data);
+          const data = await response.json()
+          setCourses(data)
         }
       } catch (error) {
-        console.log("Error: ", error);
+        console.log("Error: ", error)
+      } finally {
+        setIsLoading(false) // Set loading state to false regardless of success or failure
       }
-    };
-    fetchData();
-  }, []);
+    }
+    fetchData()
+  }, [])
 
+  if (isLoading) {
+    return <p>Loading...</p> // Show a loading indicator while fetching data
+  }
 
   return (
-      <div className="wrap main--grid">
-      {/* Map the courses state/array to render each course as a Link */}
+    <div className="wrap main--grid">
       {courses.map(course => (
         <Link
           to={`/courses/${course.id}`}
@@ -35,8 +40,7 @@ const Courses = () => {
           <h3 className="course--title">{course.title}</h3>
         </Link>
       ))}
-    
-      {/* Link to create a new course */}
+
       <Link
         to="/courses/create"
         className="course--module course--add--module"
@@ -56,7 +60,7 @@ const Courses = () => {
         </span>
       </Link>
     </div>
-  );
+  )
 }
 
-export default Courses;
+export default Courses

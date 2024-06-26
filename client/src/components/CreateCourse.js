@@ -1,4 +1,4 @@
-// CreateCourse.js
+
 import React, { useState, useContext, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'

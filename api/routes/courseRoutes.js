@@ -5,41 +5,31 @@ const authUser = require('../middleware/authUser')
 const { User, Course } = require('../models')
 const { check, validationResult } = require('express-validator')
 
-router.post('/courses', authUser, async (req, res, next) => {
-  [check('title').notEmpty().withMessage('Title is required'),
+// POST /api/courses (Create a new course)
+router.post('/courses', authUser, [
+  check('title').notEmpty().withMessage('Title is required'),
   check('description').notEmpty().withMessage('Description is required'),
-  ], async (req, res) => {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() })
-    }
+], async (req, res) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+  }
 
-    console.log('Request body:', req.body)
-    // Server-side route
-    console.log('Received request at /api/courses:', req.body)
-
-    try {
-      const course = await Course.create({
-        title: req.body.title,
-        description: req.body.description,
-        estimatedTime: req.body.estimatedTime,
-        materialsNeeded: req.body.materialsNeeded,
-        userId: req.currentUser.id
-      })
-      res.status(201).json(course)
-      // Server-side route
-      console.log('p2 Received request at /api/courses:', req.body)
-
-      //res.status(201).location(`/courses/${course.id}`).end();
-    } catch (error) {
-      if (!res.headersSent) {
-        res.status(400).json({ message: error.message })
-      } else {
-        next(error)
-      }
-    }
+  try {
+    const course = await Course.create({
+      title: req.body.title,
+      description: req.body.description,
+      materialsNeeded: req.body.materialsNeeded,
+      estimatedTime: req.body.estimatedTime,
+      userId: req.currentUser.id
+    })
+    res.status(201).location(`/courses/${course.id}`).end()
+  } catch (error) {
+    console.error('Error creating course:', error)
+    res.status(500).json({ message: 'Internal server error' })
   }
 })
+
 // GET /api/courses route
 router.get('/courses', async (req, res) => {
   try {
@@ -78,44 +68,33 @@ router.get('/courses/:id', async (req, res) => {
 })
 
 
-// PUT /api/courses/:id route
-router.put('/courses/:id/', authUser, [
-  check('title')
-    .notEmpty()
-    .withMessage('Please enter a valid course title.'),
-  check('description')
-    .notEmpty()
-    .withMessage('Please enter a valid course description.'),
+
+// PUT /api/courses/:id (Update an existing course)
+router.put('/courses/:id', authUser, [
+  check('title').notEmpty().withMessage('Title is required'),
+  check('description').notEmpty().withMessage('Description is required'),
 ], async (req, res) => {
-  const result = validationResult(req)
+  const errors = validationResult(req)
 
-  if (result.isEmpty()) {
-    let course
-    try {
-      course = await Course.findByPk(req.params.id)
-      if (course) {
-        await course.set(req.body)
-        const user = await User.findByPk(req.body.userId)
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+  }
 
-        if (!user) {
-          return res.status(404).json({ message: 'User not found' })
-        }
-
-        await course.save()
-        res.status(204).location(`/courses/${course.id}`).end()
-      } else {
-        res.status(404).json({ message: 'Course not found.' })
+  try {
+    const course = await Course.findByPk(req.params.id)
+    if (course) {
+      if (course.userId !== req.currentUser.id) {
+        return res.status(403).json({ message: 'You are not authorized to update this course' })
       }
-    } catch (error) {
-      if (error.name === "SequelizeValidationError" || error.name === "SequelizeUniqueConstraintError") {
-        const errors = error.errors.map(err => err.message)
-        res.status(400).json({ errors })
-      } else {
-        throw error
-      }
+
+      await course.update(req.body)
+      res.status(204).end()
+    } else {
+      res.status(404).json({ message: 'Course not found' })
     }
-  } else {
-    res.status(400).send({ errors: result.array() })
+  } catch (error) {
+    console.error('Error updating course:', error)
+    res.status(500).json({ message: 'Internal server error' })
   }
 })
 
