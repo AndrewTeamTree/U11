@@ -2,7 +2,7 @@
 import React, { useState, useContext, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
-import api from '../link/api' // Adjust import path as needed
+import api from '../link/api'
 
 const CreateCourse = () => {
   const navigate = useNavigate()
@@ -60,17 +60,20 @@ const CreateCourse = () => {
     navigate('/')
   }
 
+
+
+
   return (
-    <div className="form--centered">
+    <div className="wrap">
       <h2>Create Course</h2>
-      {error && (
-        <div>
-          <h2 className="validation--errors--label">Validation errors</h2>
-          <div className="validation-errors">
-            <p>{error}</p>
-          </div>
-        </div>
-      )}
+      <div className="validation--errors">
+        <h3>{error}Validation errors</h3>
+        <ul>
+          <li>Please provide a value for "Title"</li>
+          <li>Please provide a value for "Description"</li>
+        </ul>
+      </div>
+
       <form onSubmit={handleSubmit}>
         <label htmlFor="title">Title</label>
         <input id="title" name="title" type="text" ref={titleRef} required />
@@ -92,3 +95,4 @@ const CreateCourse = () => {
 }
 
 export default CreateCourse
+

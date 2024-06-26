@@ -1,5 +1,5 @@
-// api.js
-const api = async (endpoint, method = 'POST', data = null, credentials = null) => {
+
+const api = async (endpoint, method = ('POST', 'GET', 'DELETE'), data = null, credentials = null) => {
   const url = "http://localhost:5000/api" // Adjust URL as per your backend configuration
   const options = {
     method: method,

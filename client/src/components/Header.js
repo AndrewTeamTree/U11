@@ -1,31 +1,47 @@
-import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
-import AuthContext from '../context/AuthContext';
-import '../styles/global.css';
+import React, { useContext } from 'react'
+import { Link } from 'react-router-dom'
+import AuthContext from '../context/AuthContext'
+import '../styles/global.css'
 
 const Header = () => {
-  const { authUser, actions } = useContext(AuthContext);
+  const { authUser } = useContext(AuthContext)
+
 
   return (
     <header>
-      <div className="wrap header--flex">
-        <h1 className="header--logo"><Link to="/">Courses</Link></h1>
+      <div className='wrap header--flex'>
+        <h1 className='header--logo'>
+          <Link to='/'>Courses</Link>
+        </h1>
         <nav>
-          {authUser ? (
-            <ul className="header--signedin">
-              <li>Welcome, {authUser.firstName}!</li>
-              <li><button onClick={actions.signOut}>Sign Out</button></li>
-            </ul>
-          ) : (
-            <ul className="header--signedout">
-              <li><Link to="/signup">Sign Up</Link></li>
-              <li><Link to="/signin">Sign In</Link></li>
-            </ul>
-          )}
+          {/* Change Header display if user is logged in or logged out */}
+          {authUser ?
+            <>
+              <ul className='header--signedin'>
+                <li>
+                  Welcome {authUser.user.firstName} {authUser.user.lastName}!
+                </li>
+                <li>
+                  <Link to='/signout'>Sign Out</Link>
+                </li>
+              </ul>
+            </>
+            :
+            <>
+              <ul className='header--signedout'>
+                <li>
+                  <Link to='/signup'>Sign Up</Link>
+                </li>
+                <li>
+                  <Link to='/signin'>Sign in</Link>
+                </li>
+              </ul>
+            </>
+          }
         </nav>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header
