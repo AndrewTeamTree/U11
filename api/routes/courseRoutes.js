@@ -38,7 +38,7 @@ router.get('/courses', async (req, res) => {
         model: User,
       }
     })
-    console.log('Sending courses:', JSON.stringify(courses))
+
     res.status(200).json(courses)
   } catch (error) {
     console.error('Error fetching courses:', error)

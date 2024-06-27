@@ -1,12 +1,16 @@
-import React from 'react';
 
-const SignOut = ({ userSignOut }) => {
-  return (
-     <div className="form--centered">
-    <button onClick={userSignOut}>Sign Out</button>
-    </div>
-  );
-};
+import React, { useContext, useEffect } from 'react'
+import { Navigate } from 'react-router-dom'
+import AuthContext from '../context/AuthContext'
 
-export default SignOut;
+const UserSignOut = () => {
+  const { actions } = useContext(AuthContext)
 
+  useEffect(() => {
+    actions.signOut()
+  }, [actions])
+
+  return <Navigate to="/" />
+}
+
+export default UserSignOut

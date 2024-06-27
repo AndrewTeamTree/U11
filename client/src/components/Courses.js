@@ -18,14 +18,14 @@ const Courses = () => {
       } catch (error) {
         console.log("Error: ", error)
       } finally {
-        setIsLoading(false) // Set loading state to false regardless of success or failure
+        setIsLoading(false) 
       }
     }
     fetchData()
   }, [])
 
   if (isLoading) {
-    return <p>Loading...</p> // Show a loading indicator while fetching data
+    return <p>Loading...</p> 
   }
 
   return (

@@ -19,7 +19,7 @@ const api = async (endpoint, method = ('POST', 'GET', 'DELETE'), data = null, cr
     options.body = JSON.stringify(data)
   }
 
-  console.log('API Request:', url + endpoint, options) // Debugging line
+
 
   try {
     const response = await fetch(`${url}${endpoint}`, options)
@@ -28,7 +28,7 @@ const api = async (endpoint, method = ('POST', 'GET', 'DELETE'), data = null, cr
       console.error('API Response Error:', errorMessage) // Debugging line
       throw new Error(`HTTP error! status: ${response.status}, message: ${errorMessage}`)
     }
-    console.log('API Response Success:', response) // Debugging line
+
     return response
   } catch (error) {
     console.error('Fetch error:', error.message)

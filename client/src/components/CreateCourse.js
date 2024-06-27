@@ -34,8 +34,6 @@ const CreateCourse = () => {
       password: authUser.password,
     }
 
-    console.log('Submitting new course:', newCourse) // Debugging line
-    console.log('With credentials:', credentials) // Debugging line
 
     try {
       const response = await api('/courses', 'POST', newCourse, credentials)

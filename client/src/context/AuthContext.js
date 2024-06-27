@@ -1,13 +1,14 @@
+
 import React, { createContext, useState, useEffect } from 'react'
-import Cookies from "js-cookie"
+import Cookies from 'js-cookie'
 import users from '../link/users'
 import api from '../link/api'
 
 const AuthContext = createContext(null)
 export default AuthContext
 
-export const AuthProvider = (props) => {
-  const cookie = Cookies.get("authenticatedUser")
+export const AuthProvider = ({ children }) => {
+  const cookie = Cookies.get('authenticatedUser')
   const [authUser, setAuthUser] = useState(cookie ? JSON.parse(cookie) : null)
 
   useEffect(() => {
@@ -41,7 +42,7 @@ export const AuthProvider = (props) => {
 
   const signOut = () => {
     setAuthUser(null)
-    Cookies.remove("authenticatedUser")
+    Cookies.remove('authenticatedUser')
   }
 
   const createUser = async (user) => {
@@ -80,9 +81,9 @@ export const AuthProvider = (props) => {
       signIn,
       signOut,
       createUser,
-      createCourse
-    }
+      createCourse,
+    },
   }
 
-  return <AuthContext.Provider value={value}>{props.children}</AuthContext.Provider>
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

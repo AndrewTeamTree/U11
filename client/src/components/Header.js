@@ -1,3 +1,4 @@
+
 import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
@@ -6,38 +7,32 @@ import '../styles/global.css'
 const Header = () => {
   const { authUser } = useContext(AuthContext)
 
-
   return (
     <header>
-      <div className='wrap header--flex'>
-        <h1 className='header--logo'>
-          <Link to='/'>Courses</Link>
+      <div className="wrap header--flex">
+        <h1 className="header--logo">
+          <Link to="/">Courses</Link>
         </h1>
         <nav>
-          {/* Change Header display if user is logged in or logged out */}
-          {authUser ?
-            <>
-              <ul className='header--signedin'>
-                <li>
-                  Welcome {authUser.user.firstName} {authUser.user.lastName}!
-                </li>
-                <li>
-                  <Link to='/signout'>Sign Out</Link>
-                </li>
-              </ul>
-            </>
-            :
-            <>
-              <ul className='header--signedout'>
-                <li>
-                  <Link to='/signup'>Sign Up</Link>
-                </li>
-                <li>
-                  <Link to='/signin'>Sign in</Link>
-                </li>
-              </ul>
-            </>
-          }
+          {authUser ? (
+            <ul className="header--signedin">
+              <li>
+                Welcome {authUser.user.firstName} {authUser.user.lastName}!
+              </li>
+              <li>
+                <Link to="/signout">Sign Out</Link>
+              </li>
+            </ul>
+          ) : (
+            <ul className="header--signedout">
+              <li>
+                <Link to="/signup">Sign Up</Link>
+              </li>
+              <li>
+                <Link to="/signin">Sign In</Link>
+              </li>
+            </ul>
+          )}
         </nav>
       </div>
     </header>

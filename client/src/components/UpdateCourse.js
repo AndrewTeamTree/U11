@@ -42,17 +42,19 @@ const UpdateCourse = () => {
       description: descriptionRef.current.value,
       estimatedTime: estimatedTimeRef.current.value,
       materialsNeeded: materialsNeededRef.current.value,
-      userId: authUser.user.id
+      userId: authUser.user.id,
     }
 
     try {
       const response = await api(`/courses/${id}`, 'PUT', updatedCourse, {
         username: authUser.emailAddress,
-        password: authUser.password
+        password: authUser.password,
       })
 
       if (response.status === 204) {
         navigate(`/courses/${id}`)
+      } else if (response.status === 403) {
+        setErrors(['You do not have permission to update this course.'])
       } else {
         const message = await response.json()
         setErrors([`HTTP error! status: ${response.status}, message: ${JSON.stringify(message)}`])
@@ -62,31 +64,30 @@ const UpdateCourse = () => {
     }
   }
 
-  if (!course) {
-    return <p>Loading...</p>
-  }
-
-  // DELETE Course
   const handleDeleteCourse = async () => {
     const credentials = {
-      username: authUser.user.emailAddress,
-      password: authUser.user.password
+      username: authUser.emailAddress,
+      password: authUser.password,
     }
     try {
-      const response = await api(`/courses/${id}`, "DELETE", null, credentials)
+      const response = await api(`/courses/${id}`, 'DELETE', null, credentials)
       if (response.status === 204) {
         navigate('/')
-      } else if (response.status === 401) {
+      } else if (response.status === 401 || response.status === 403) {
         const data = await response.json()
         setErrors([data.message])
+        setErrors(['You do not have permission to update this course.'])
       } else {
         throw new Error()
       }
     } catch (error) {
-      console.log('Error: ', error.message)
+      setErrors(['Failed to delete course.'])
     }
   }
 
+  if (!course) {
+    return <p>Loading...</p>
+  }
 
   return (
     <div className="wrap">
@@ -144,10 +145,10 @@ const UpdateCourse = () => {
           </div>
         </div>
         <button className="button" type="submit">Update Course</button>
-        <button className="button" onClick={handleDeleteCourse}>
+        <button type="button" className="button" onClick={handleDeleteCourse}>
           Delete Course
         </button>
-        <button className="button button-secondary" onClick={() => navigate('/')}>Cancel</button>
+        <button type="button" className="button button-secondary" onClick={() => navigate(`/courses/${id}`)}>Cancel</button>
       </form>
     </div>
   )
