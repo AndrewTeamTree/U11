@@ -8,14 +8,16 @@ const UpdateCourse = () => {
   const navigate = useNavigate()
   const { id } = useParams()
 
-  const [course, setCourse] = useState(null)
-  const [errors, setErrors] = useState([])
+  const [course, setCourse] = useState(null) // State to hold the course data
+  const [errors, setErrors] = useState([]) // State to manage validation errors
 
+  // Refs to hold form input references
   const titleRef = useRef(null)
   const descriptionRef = useRef(null)
   const estimatedTimeRef = useRef(null)
   const materialsNeededRef = useRef(null)
 
+  // Effect to fetch course data on component mount
   useEffect(() => {
     const fetchCourse = async () => {
       try {
@@ -24,71 +26,81 @@ const UpdateCourse = () => {
           const data = await response.json()
           setCourse(data)
         } else if (response.status === 404) {
-          navigate('/notfound')
+          navigate('/notfound') // Redirects to not found page if course is not found
         }
       } catch (error) {
-        setErrors(['Failed to fetch course.'])
+        setErrors(['Failed to fetch course.']) // Sets error state if fetching course fails
       }
     }
 
     fetchCourse()
   }, [id, navigate])
 
+  // Handles form submission to update the course
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    // Constructs updated course object from form inputs
     const updatedCourse = {
       title: titleRef.current.value,
       description: descriptionRef.current.value,
       estimatedTime: estimatedTimeRef.current.value,
       materialsNeeded: materialsNeededRef.current.value,
-      userId: authUser.user.id,
+      userId: authUser.user.id, // Assigns the user ID from authUser context
     }
 
     try {
+      // Sends PUT request to update the course
       const response = await api(`/courses/${id}`, 'PUT', updatedCourse, {
         username: authUser.emailAddress,
         password: authUser.password,
       })
 
+      // Redirects to the course detail page if update is successful
       if (response.status === 204) {
         navigate(`/courses/${id}`)
       } else if (response.status === 403) {
-        setErrors(['You do not have permission to update this course.'])
+        setErrors(['You do not have permission to update this course.']) // Sets error for permission issues
       } else {
         const message = await response.json()
-        setErrors([`HTTP error! status: ${response.status}, message: ${JSON.stringify(message)}`])
+        setErrors([`HTTP error! status: ${response.status}, message: ${JSON.stringify(message)}`]) // Sets error for other HTTP errors
       }
     } catch (error) {
-      setErrors(['Failed to update course.'])
+      setErrors(['Failed to update course.']) // Sets error if update fails
     }
   }
 
+  // Handles deletion of the course
   const handleDeleteCourse = async () => {
     const credentials = {
       username: authUser.emailAddress,
       password: authUser.password,
     }
+
     try {
+      // Sends DELETE request to delete the course
       const response = await api(`/courses/${id}`, 'DELETE', null, credentials)
+
+      // Redirects to the home page if deletion is successful
       if (response.status === 204) {
         navigate('/')
       } else if (response.status === 401 || response.status === 403) {
         const data = await response.json()
-        setErrors([data.message])
-        setErrors(['You do not have permission to update this course.'])
+        setErrors([data.message]) // Sets error if user does not have permission to delete
       } else {
-        throw new Error()
+        throw new Error() // Throws error for unexpected status codes
       }
     } catch (error) {
-      setErrors(['Failed to delete course.'])
+      setErrors(['Failed to delete course.']) // Sets error if deletion fails
     }
   }
 
+  // Renders loading message if course data is not yet fetched
   if (!course) {
     return <p>Loading...</p>
   }
 
+  // Renders update course form with course data and error messages
   return (
     <div className="wrap">
       <h2>Update Course</h2>

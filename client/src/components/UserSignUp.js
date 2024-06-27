@@ -4,15 +4,17 @@ import AuthContext from '../context/AuthContext'
 
 const UserSignUp = () => {
   const navigate = useNavigate()
-  const { actions } = useContext(AuthContext)
-  const [error, setError] = useState('')
-  const firstName = useRef(null)
-  const lastName = useRef(null)
-  const emailAddress = useRef(null)
-  const password = useRef(null)
+  const { actions } = useContext(AuthContext) // Accesses actions from AuthContext
+  const [error, setError] = useState('') // State to manage error messages
+  const firstName = useRef(null) // Ref to capture first name input
+  const lastName = useRef(null) // Ref to capture last name input
+  const emailAddress = useRef(null) // Ref to capture email input
+  const password = useRef(null) // Ref to capture password input
 
   const handleSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault() // Prevents default form submission behavior
+
+    // Constructing a new user object from form input
     const newUser = {
       firstName: firstName.current.value,
       lastName: lastName.current.value,
@@ -20,11 +22,11 @@ const UserSignUp = () => {
       password: password.current.value,
     }
 
-    console.log('Form data submitted:', newUser) // Log the form data
-
     try {
+      // Attempt to create a new user using actions.createUser method
       const response = await actions.createUser(newUser)
-      console.log('Payload being sent:', newUser) // Log the payload being sent
+
+      // If user creation is successful, navigate to sign-in page
       if (response) {
         console.log('User created successfully')
         navigate('/signin')
@@ -32,7 +34,10 @@ const UserSignUp = () => {
         setError('User creation failed. Please try again.')
       }
     } catch (error) {
+      // Handle errors during user creation
       console.error('Error:', error)
+
+      // Parsing error messages and setting appropriate error state
       try {
         const errorMessage = JSON.parse(error.message.split('message: ')[1]).errors.join(', ')
         setError(`An error occurred during sign up: ${errorMessage}`)
@@ -58,9 +63,9 @@ const UserSignUp = () => {
         <label htmlFor="password">Password</label>
         <input id="password" name="password" type="password" ref={password} placeholder="Password" required />
 
-        {error && <p className="error">{error}</p>}
+        {error && <p className="error">{error}</p>} {/* Display error message if present */}
 
-        <button className="button" type="submit">Sign Up</button>
+        <button className="button" type="submit">Sign Up</button> {/* Submit button */}
 
       </form>
     </div>

@@ -4,13 +4,19 @@ import '../styles/global.css'
 import api from '../link/api'
 
 const Courses = () => {
+  // State to store courses data
   const [courses, setCourses] = useState([])
+  // State to manage loading state
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    // Fetch data from the API when the component mounts
     const fetchData = async () => {
       try {
+        // Make a GET request to the API to fetch courses
         const response = await api('/courses', "GET")
+
+        // If request is successful, update the courses state
         if (response.status === 200) {
           const data = await response.json()
           setCourses(data)
@@ -18,16 +24,20 @@ const Courses = () => {
       } catch (error) {
         console.log("Error: ", error)
       } finally {
-        setIsLoading(false) 
+        // Set loading state to false after fetching data
+        setIsLoading(false)
       }
     }
+
     fetchData()
   }, [])
 
+  // Show loading message while data is being fetched
   if (isLoading) {
-    return <p>Loading...</p> 
+    return <p>Loading...</p>
   }
 
+  // Render the list of courses and a link to create a new course
   return (
     <div className="wrap main--grid">
       {courses.map(course => (
