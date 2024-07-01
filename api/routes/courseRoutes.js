@@ -68,7 +68,6 @@ router.get('/courses/:id', async (req, res) => {
 })
 
 
-
 // PUT /api/courses/:id (Update an existing course)
 router.put('/courses/:id', authUser, [
   check('title').notEmpty().withMessage('Title is required'),

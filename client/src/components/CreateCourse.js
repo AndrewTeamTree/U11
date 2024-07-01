@@ -10,6 +10,7 @@ const CreateCourse = () => {
   const { authUser } = useContext(AuthContext)
 
   // State to manage error messages
+  const [errors, setErrors] = useState({})
   const [error, setError] = useState('')
   // State to manage loading status
   const [loading, setLoading] = useState(false)
@@ -23,6 +24,8 @@ const CreateCourse = () => {
   // Function to handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault() // Prevents default form submission
+
+
     setLoading(true) // Sets loading state to true
     setError('') // Clears previous error messages
 
@@ -50,6 +53,7 @@ const CreateCourse = () => {
       } else {
         const errorMessage = await response.json()
         console.error('Course creation failed:', errorMessage) // Debugging line
+        setErrors(errorMessage.errors || {})
         setError(`Course creation failed: ${errorMessage.message || 'Please try again.'}`)
       }
     } catch (error) {
@@ -70,27 +74,42 @@ const CreateCourse = () => {
   return (
     <div className="wrap">
       <h2>Create Course</h2>
-      <div className="validation--errors">
-        <h3>{error}Validation errors</h3>
-        <ul>
-          <li>Please provide a value for "Title"</li>
-          <li>Please provide a value for "Description"</li>
-        </ul>
-      </div>
+      {error && (
+        <div className="validation--errors">
+          <h3>Validation errors</h3>
+          <ul>
+            {errors.title && <li>{errors.title}</li>}
+            {errors.description && <li>{errors.description}</li>}
+          </ul>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
         <label htmlFor="title">Title</label>
-        <input id="title" name="title" type="text" ref={titleRef} required />
+        <input
+          id="title"
+          name="title"
+          type="text"
+          ref={titleRef}
+          placeholder="Course Title"
+        />
+        {errors.title && <p className="error">{errors.title}</p>}
         <label htmlFor="description">Description</label>
-        <textarea id="description" name="description" ref={descriptionRef} required />
+        <textarea
+          id="description"
+          name="description"
+          ref={descriptionRef}
+          placeholder="Course Description"
+        />
+        {errors.description && <p className="error">{errors.description}</p>}
         <label htmlFor="estimatedTime">Estimated Time</label>
         <input id="estimatedTime" name="estimatedTime" type="text" ref={estimatedTimeRef} />
         <label htmlFor="materialsNeeded">Materials Needed</label>
         <textarea id="materialsNeeded" name="materialsNeeded" ref={materialsNeededRef} />
-        <button className="button" type="submit" disabled={loading}>
+        <button className="button" type="submit" onClick={handleSubmit} disabled={loading}>
           {loading ? 'Creating Course...' : 'Create Course'}
         </button>
-        <button className="button button-secondary" onClick={handleCancel} disabled={loading}>
+        <button className="button button-secondary" type="button" onClick={handleCancel} disabled={loading}>
           Cancel
         </button>
       </form>
